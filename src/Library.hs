@@ -10,7 +10,7 @@ data Guantelete = UnGuantelete {
     gemas:: [Gema]
 } deriving (Show, Eq)
 
-data Personaje = UnPersonaje{
+data Personaje = UnPersonaje {
     edad :: Number,
     energia :: Number,
     habilidades :: [String],
@@ -64,10 +64,10 @@ elEspacio planet personaje = (debilitarEnergia personaje 20){planeta = planet}
 elPoder :: Gema
 elPoder personaje
     | ((<=2).length.habilidades) personaje = (debilitarEnergia personaje (energia personaje)){habilidades = []}
-    | otherwise =  (debilitarEnergia personaje (energia personaje)){habilidades = []}
+    | otherwise =  debilitarEnergia personaje (energia personaje)
     
 elTiempo :: Gema
-elTiempo personaje = (debilitarEnergia personaje 20){edad = max 18 (div (edad personaje) 2)}
+elTiempo personaje = (debilitarEnergia personaje 50){edad = max 18 (div (edad personaje) 2)}
 
 laGemaLoca :: Gema -> Gema
 laGemaLoca gema = (gema.gema) 
@@ -80,3 +80,37 @@ guanteleteGoma = UnGuantelete {material="Goma", gemas=[elTiempo, elAlma "usar Mj
 -- Punto 5
 utilizar :: [Gema] -> Personaje -> Personaje
 utilizar gemas enemigo = foldl (\enemigo gema -> gema enemigo) enemigo gemas
+
+-- Punto 6
+gemaMasPoderosa :: Guantelete -> Personaje -> Gema
+gemaMasPoderosa guantelete persona = gemaMasdanina persona (gemas guantelete)
+
+gemaMasdanina :: Personaje -> [Gema] -> Gema
+gemaMasdanina persona [gema] = gema
+gemaMasdanina persona (gema:gemas)
+    |  comparoGemas gema (head gemas) persona = gemaMasdanina persona (gema:gemas)
+    |  otherwise = gemaMasdanina persona (gemas)
+
+comparoGemas gema1 gema2 persona = ((energia.gema1) persona) > ((energia.gema2) persona)
+
+--Otra Opcion
+{-
+gemaMasPoderosa guantelete persona = gemaMasdanina persona (gemas guantelete)
+
+gemaMasdanina persona [x] = x
+gemaMasdanina persona (x:xs) 
+        | all ((aplicarGemaEner persona x)>) (map (aplicarGemaEner persona) xs) = x
+        | otherwise = gemaRecursiva personaje xs
+        
+aplicarGemaEner persona gema = energia (gema personaje) -}
+
+-- Punto 7
+
+{- La funcion gemaMasPoderosa punisher guanteleteDeLocos no se podria ejectuar ya que entrariamos
+en un loop infinito donde la funcion estará constantemente buscando cual es la más poderosa, aun
+cuando son todas iguales. Estaria siempre ejecutando la parte recursiva donde hasta no comparar
+con la ultima gema, no para y no existe en este caso esa ultima
+
+La funcion usoLasTresPrimerasGemas guanteleteDeLocos punisher si podria ejecutarse ya que, aunque
+hay infinitas gemas en el guantelete, a mi sólo me interesa tomar las primeras tres y utilizar esas,
+por lo que se descartan las demas y solo se aplican las primeras 3.-}
